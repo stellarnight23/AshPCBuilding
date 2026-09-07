@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings | Ash's PC Building</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-nav.js" defer></script>
+</head>
+<body class="auth-page">
+    <header>
+        <div class="flex-container">
+            <img src="images/Banner.png" alt="Ash's PC Building Banner" id="banner">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="auth.html">Account</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="policy.html">Terms of Service</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="flex-container">
+            <img src="images/Logo.png" alt="Ash's PC Building Logo" id="logo">
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <section class="auth-intro">
+            <p class="chat-eyebrow">Ash's PC Building</p>
+            <h1>Account settings</h1>
+            <p>Review your account details and update your password.</p>
+        </section>
+
+        <section class="auth-card" aria-labelledby="settingsTitle">
+            <div class="auth-form-wrap">
+                <div class="auth-form-panel active">
+                    <h2 id="settingsTitle">Your account</h2>
+                    <p class="auth-supporting-text" id="accountDetails">Loading account details...</p>
+                    <form id="passwordForm" novalidate>
+                        <label for="currentPassword">Current password</label>
+                        <input id="currentPassword" type="password" autocomplete="current-password" required>
+
+                        <label for="newPassword">New password</label>
+                        <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+                        <p class="password-hint">Use at least 8 characters.</p>
+
+                        <label for="confirmPassword">Confirm new password</label>
+                        <input id="confirmPassword" type="password" autocomplete="new-password" required>
+                        <button class="auth-submit" type="submit">Update password</button>
+                        <p class="form-message" id="settingsMessage" role="status"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Ash's PC Building</p>
+    </footer>
+
+    <script>
+        const accountDetails = document.getElementById('accountDetails');
+        const passwordForm = document.getElementById('passwordForm');
+        const settingsMessage = document.getElementById('settingsMessage');
+
+        async function loadAccount() {
+            try {
+                const response = await fetch('/api/me');
+                if (response.status === 401) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
+                if (!response.ok) throw new Error('Account details are unavailable.');
+                const result = await response.json();
+                if (!result.user) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
+                accountDetails.textContent = `${result.user.name} - ${result.user.email}`;
+            } catch {
+                accountDetails.textContent = 'Unable to load your account details.';
+            }
+        }
+
+        passwordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            settingsMessage.textContent = '';
+            settingsMessage.classList.remove('error');
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (!passwordForm.checkValidity() || newPassword !== confirmPassword) {
+                settingsMessage.textContent = 'Enter your current password and matching new passwords of at least 8 characters.';
+                settingsMessage.classList.add('error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/account-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const result = await response.json();
+                settingsMessage.textContent = response.ok ? 'Your password has been updated.' : result.error;
+                settingsMessage.classList.toggle('error', !response.ok);
+                if (response.ok) passwordForm.reset();
+            } catch {
+                settingsMessage.textContent = 'The account server is unavailable. Please try again.';
+                settingsMessage.classList.add('error');
+            }
+        });
+
+        loadAccount();
+    </script>
+</body>
+</html>

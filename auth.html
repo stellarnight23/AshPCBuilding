@@ -84,8 +84,10 @@
                         <p class="password-hint">Use at least 8 characters.</p>
                         <p class="field-error" id="registerPasswordError"></p>
 
-                        <label class="checkbox-label terms-checkbox"><input id="acceptTerms" type="checkbox" required> I agree to the <a href="policy.html">Terms of Service</a>.</label>
+                        <label class="checkbox-label terms-checkbox"><input id="acceptTerms" name="acceptTerms" type="checkbox" value="true" required> I agree to the <a href="policy.html">Terms of Service</a>.</label>
                         <p class="field-error" id="termsError"></p>
+                        <label class="checkbox-label terms-checkbox"><input id="acceptPrivacyPolicy" name="acceptPrivacyPolicy" type="checkbox" value="true" required> I agree to the <a href="privacy.html">Privacy Policy</a>.</label>
+                        <p class="field-error" id="privacyPolicyError"></p>
                         <button class="auth-submit" type="submit">Create account</button>
                         <p class="form-message" id="registerMessage" role="status"></p>
                     </form>
@@ -169,7 +171,7 @@
             event.preventDefault();
             const form = event.currentTarget;
             const valid = form.checkValidity();
-            if (!valid) return showMessage('registerMessage', 'Please complete all fields and accept the Terms of Service.', true);
+            if (!valid) return showMessage('registerMessage', 'Please complete all fields and accept the Terms of Service and Privacy Policy.', true);
             try {
                 await submitAccount('/api/register', form, 'registerMessage');
             } catch {

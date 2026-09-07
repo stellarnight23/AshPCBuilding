@@ -66,6 +66,31 @@ nav a:hover {
     text-decoration: underline;
 }
 
+.logout-button,
+.account-settings-link {
+    display: block;
+    margin-top: 0.35em;
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--text-color);
+    border-radius: 0.35em;
+    background: var(--base-color);
+    color: var(--text-color);
+    font: inherit;
+    cursor: pointer;
+}
+
+.logout-button[hidden],
+.account-settings-link[hidden] {
+    display: none;
+}
+
+.logout-button:hover,
+.account-settings-link:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    text-decoration: none;
+}
+
 header, section {
     margin: 2em auto;
     width: min(auto, 100%);
@@ -80,7 +105,8 @@ header, section {
     justify-content: center;
     gap: 3em;
     flex-wrap: wrap;
-    padding: 1em;
+    padding-bottom: 1em;
+    padding-top: 1em;
 }
 
 header #logo {

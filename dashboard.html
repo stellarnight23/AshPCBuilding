@@ -89,9 +89,12 @@
         let audioContext;
 
         async function connectDashboard() {
+            const tokenResponse = await fetch('/api/chat-token');
+            if (!tokenResponse.ok) throw new Error('Administrator access required.');
+            const { token } = await tokenResponse.json();
             ownerId = 'owner';
             const chatProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-            socket = new WebSocket(`${chatProtocol}://${window.location.hostname}:8080?dashboard=1`);
+            socket = new WebSocket(`${chatProtocol}://${window.location.hostname}:8080?dashboard=1&token=${encodeURIComponent(token)}`);
             socket.onopen = () => {
                 dashboardStatus.innerHTML = '<span></span>Connected';
                 sendJson({ type: 'dashboard' });

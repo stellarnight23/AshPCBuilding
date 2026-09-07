@@ -116,8 +116,8 @@ wss.on('connection', (ws, request) => {
   const requestUrl = new URL(request.url, `http://${request.headers.host}`);
   const token = requestUrl.searchParams.get('token');
   const isDashboardConnection = requestUrl.searchParams.get('dashboard') === '1';
-  const user = isDashboardConnection ? { userId: 'owner', name: 'Ash' } : verifyChatToken(token);
-  if (!user) {
+  const user = verifyChatToken(token);
+  if (!user || (isDashboardConnection && !user.isAdmin)) {
     ws.close(1008, 'Login required');
     return;
   }
